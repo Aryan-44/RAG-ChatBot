@@ -11,3 +11,4 @@ docx2txt
 unstructured
 openpyxl
 pandas
+sentence-transformers
