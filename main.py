@@ -11,13 +11,25 @@ from langchain_community.vectorstores import FAISS
 from langchain_classic.prompts import PromptTemplate
 load_dotenv()
 
+api_key = None
+# Check multiple possible names in Streamlit Secrets
 try:
-    api_key = st.secrets["groq-api-key"]
-except (KeyError, FileNotFoundError):
-    api_key = os.getenv("groq-api-key")
+    for key in ["groq-api-key", "GROQ_API_KEY", "groq_api_key", "API_KEY"]:
+        if key in st.secrets:
+            api_key = st.secrets[key]
+            break
+except Exception:
+    pass
+
+# Fallback to environment variables (local .env)
+if not api_key:
+    for key in ["groq-api-key", "GROQ_API_KEY", "groq_api_key"]:
+        api_key = os.getenv(key)
+        if api_key:
+            break
 
 if not api_key:
-    st.error("API Key not found. Please set 'groq-api-key' in .env locally or in Streamlit Secrets on the cloud.")
+    st.error("API Key not found. Please set 'GROQ_API_KEY' in .env locally or in Streamlit Secrets on the cloud.")
     st.stop()
 
 llm = ChatGroq(
