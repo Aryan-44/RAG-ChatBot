@@ -391,14 +391,36 @@ if query:
 
             with st.chat_message("assistant"):
                 st.write(res.content)
+                
+    else:
+        st.write("Using General Chat Mode (No documents uploaded yet)")
+        
+        general_prompt = PromptTemplate.from_template(
+        """
+        Previous Conversation:
+        {chat_history}
 
-            
+        User Question:
+        {question}
 
+        Answer:
+        """
+        )
+        general_chain = general_prompt | llm
 
+        res = general_chain.invoke(
+            {
+                "question" : query,
+                "chat_history" : chat_history
+            }
+        )
 
+        st.session_state.messages.append(
+            {
+                "role" : "assistant",
+                "content" : res.content
+            }
+        )
 
-    
-
-    
-    
-
+        with st.chat_message("assistant"):
+            st.write(res.content)
