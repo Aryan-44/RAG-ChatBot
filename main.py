@@ -11,7 +11,14 @@ from langchain_community.vectorstores import FAISS
 from langchain_classic.prompts import PromptTemplate
 load_dotenv()
 
-api_key = os.getenv("groq-api-key")
+try:
+    api_key = st.secrets["groq-api-key"]
+except (KeyError, FileNotFoundError):
+    api_key = os.getenv("groq-api-key")
+
+if not api_key:
+    st.error("API Key not found. Please set 'groq-api-key' in .env locally or in Streamlit Secrets on the cloud.")
+    st.stop()
 
 llm = ChatGroq(
     model = "llama-3.3-70b-versatile",
